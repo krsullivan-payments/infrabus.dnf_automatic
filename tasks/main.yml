@@ -11,53 +11,37 @@
     dest: /etc/dnf/automatic.conf
     mode: "0644"
 
-- name: Perform auto reboot specific tasks
-  when: dnf_automatic_reboot | bool
+- name: Create systemd timer and service files
   block:
     - name: Install dependencies needed for reboot
       ansible.builtin.package:
-        name: "{{ dnf_automatic_reboot_dependencies }}"
+        name: "{{ dnf_automatic_service_dependencies }}"
         state: present
 
     - name: Deploy service and timer units
       ansible.builtin.template:
         src: "{{ item }}"
-        dest: "/etc/systemd/system/{{ item }}"
+        dest: "/usr/lib/systemd/system/{{ item }}"
         owner: root
         group: root
         mode: "0644"
       loop:
-        - dnf-automatic-reboot.service
-        - dnf-automatic-reboot.timer
+        - dnf-automatic-infrabus.service
+        - dnf-automatic-infrabus.timer
       notify: Reload systemd
 
-- name: Check status of dnf-automatic-install.timer
+- name: Check status of dnf-automatic-infrabus.timer
   ansible.builtin.systemd:
-    name: dnf-automatic-install.timer
-  register: dnf_automatic_install_timer
-
-- name: Start and enable systemd timer for dnf-automatic
-  ansible.builtin.service:
-    name: dnf-automatic-install.timer
-    state: started
-    enabled: true
-  # run always if not in check mode or if the timer unit exists
-  # regardless of the check mode state
-  when: not ansible_check_mode or
-        dnf_automatic_install_timer.status["LoadState"] == "loaded"
-
-- name: Check status of dnf-automatic-reboot.timer
-  ansible.builtin.systemd:
-    name: dnf-automatic-reboot.timer
-  register: dnf_automatic_reboot_timer
+    name: dnf-automatic-infrabus.timer
+  register: dnf_automatic_infrabus_timer
 
 - name: Set timer state for auto reboot
   ansible.builtin.systemd:
-    name: dnf-automatic-reboot.timer
-    state: "{{ dnf_automatic_reboot | ternary('started', 'stopped') }}"
-    enabled: "{{ dnf_automatic_reboot }}"
+    name: dnf-automatic-infrabus.timer
+    state: "{{ dnf_automatic_enable_timer | ternary('started', 'stopped') }}"
+    enabled: "{{ dnf_automatic_enable_timer }}"
     masked: false
   # run always if not in check mode and the auto reboot is enabled
   # or if the timer unit exists regardless of the check mode state
-  when: (not ansible_check_mode and dnf_automatic_reboot) or
-        dnf_automatic_reboot_timer.status["LoadState"] == "loaded"
+  when: (not ansible_check_mode and dnf_automatic_enable_timer) or
+        dnf_automatic_infrabus_timer.status["LoadState"] == "loaded"

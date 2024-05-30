@@ -1,0 +1,14 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description={{ dnf_automatic_timer_description }} timer
+ConditionPathExists={{ dnf_automatic_timer_conditionPathExists }}
+Wants={{ dnf_automatic_timer_wants }}
+
+[Timer]
+OnCalendar={{ dnf_automatic_timer_onCalendar }}
+RandomizedDelaySec={{ dnf_automatic_timer_randomizedDelaySec }}
+Persistent={{ dnf_automatic_timer_persistent }}
+
+[Install]
+WantedBy=timers.target

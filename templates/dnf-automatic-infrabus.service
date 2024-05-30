@@ -1,0 +1,14 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description={{ dnf_automatic_service_description }} service
+ConditionPathExists={{ dnf_automatic_service_conditionPathExists }}
+After={{ dnf_automatic_service_after }}
+
+[Service]
+Type={{ dnf_automatic_service_type }}
+Nice={{ dnf_automatic_service_nice }}
+IOSchedulingClass={{ dnf_automatic_service_schedulingClass }}
+IOSchedulingPriority={{ dnf_automatic_service_schedulingPriority }}
+Environment={{ dnf_automatic_service_environment }}
+ExecStart={{ dnf_automatic_service_execStart }}
+

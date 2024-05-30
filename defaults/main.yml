@@ -1,6 +1,5 @@
 ---
-
-# the preferences of dnf-automatic are documented at
+# the parameters for dnf-automatic are documented at
 # https://dnf.readthedocs.org/en/latest/automatic.html
 
 # [commands]
@@ -9,11 +8,11 @@ dnf_automatic_apply_updates: true
 dnf_automatic_download_updates: true
 dnf_automatic_network_online_timeout: 60
 dnf_automatic_random_sleep: 0
-dnf_automatic_upgrade_type: security
+dnf_automatic_upgrade_type: default
 
 # [emitters]
 
-dnf_automatic_emit_via: stdio
+dnf_automatic_emit_via: stdio,email
 dnf_automatic_system_name: "{{ ansible_nodename }}"
 dnf_automatic_send_error_messages: false
 
@@ -24,27 +23,44 @@ dnf_automatic_stdin_format: "{body}"
 
 # [command_email]
 
-dnf_automatic_email_command_format: "mail -Ssendwait -s {subject} -r {email_from} {email_to}"
+dnf_automatic_email_command_format: "mailx -s {subject} -r {email_from} -S mta=smtp://{email_host}:{email_port} {email_to}"
 dnf_automatic_email_stdin_format: "{body}"
 
 # [email]
 
-dnf_automatic_email_from: root
+dnf_automatic_email_from: "dnf-automatic@{{ ansible_fqdn }}"
 dnf_automatic_email_host: localhost
 dnf_automatic_email_port: 25
 dnf_automatic_email_tls: "no"
-dnf_automatic_email_to: root
+dnf_automatic_email_to: '_infrastructure_business@payments.ca'
 
 # [base]
 
 # this dict can be used to override arbitrary settings from dnf.conf
 dnf_automatic_base_overrides: {}
 
-# Reboot
+dnf_automatic_enable_timer: false
 
-dnf_automatic_reboot: false
-dnf_automatic_reboot_dependencies: yum-utils
-dnf_automatic_reboot_OnCalendar: "03:00"
-dnf_automatic_reboot_AccuracySec: "15s"
-dnf_automatic_reboot_Description: "dnf-automatic-reboot"
-dnf_automatic_reboot_ExecStart: "/bin/bash -c '/bin/needs-restarting -r || /sbin/reboot'"
+# Service
+dnf_automatic_service_description: 'dnf-automatic'
+dnf_automatic_service_conditionPathExists: '!/run/ostree-booted'
+dnf_automatic_service_after: 'network-online.target'
+dnf_automatic_service_type: 'oneshot' 
+dnf_automatic_service_nice: 19
+dnf_automatic_service_schedulingClass: 2
+dnf_automatic_service_schedulingPriority: 7
+dnf_automatic_service_environment: '"ABRT_IGNORE_PYTHON=1"'
+dnf_automatic_service_execStart: '/usr/bin/dnf-automatic /etc/dnf/automatic.conf --timer --installupdates'
+dnf_automatic_service_dependencies:
+  - yum-utils
+  - s-nail
+
+# Timer
+dnf_automatic_timer_description: 'dnf-automatic'
+dnf_automatic_timer_conditionPathExists: '!/run/ostree-booted'
+dnf_automatic_timer_wants: 'network-online.target'
+# Default is Mondays at 6:00
+dnf_automatic_timer_onCalendar: 'Mon *-*-* 6:00:00'
+dnf_automatic_timer_randomizedDelaySec: '10m'
+dnf_automatic_timer_persistent: true
+

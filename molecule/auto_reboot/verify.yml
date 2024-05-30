@@ -51,24 +51,24 @@
           - dnf_automatic_install_timer.status['ActiveState'] == 'active'
           - dnf_automatic_install_timer.status['UnitFileState'] == 'enabled'
 
-    - name: Check status of dnf-automatic-reboot.timer
+    - name: Check status of dnf-automatic-infrabus.timer
       ansible.builtin.systemd:
-        name: dnf-automatic-reboot.timer
-      register: dnf_automatic_reboot_timer
+        name: dnf-automatic-infrabus.timer
+      register: dnf_automatic_infrabus_timer
 
-    - name: Check that dnf-automatic-reboot.timer is started and enabled
+    - name: Check that dnf-automatic-infrabus.timer is started and enabled
       ansible.builtin.assert:
         that:
-          - dnf_automatic_reboot_timer.status['LoadState'] == 'loaded'
-          - dnf_automatic_reboot_timer.status['ActiveState'] == 'active'
-          - dnf_automatic_reboot_timer.status['UnitFileState'] == 'enabled'
+          - dnf_automatic_infrabus_timer.status['LoadState'] == 'loaded'
+          - dnf_automatic_infrabus_timer.status['ActiveState'] == 'active'
+          - dnf_automatic_infrabus_timer.status['UnitFileState'] == 'enabled'
 
-    - name: Check status of dnf-automatic-reboot.service
+    - name: Check status of dnf-automatic-infrabus.service
       ansible.builtin.systemd:
-        name: dnf-automatic-reboot.service
-      register: dnf_automatic_reboot_service
+        name: dnf-automatic-infrabus.service
+      register: dnf_automatic_infrabus_service
 
-    - name: Check that dnf-automatic-reboot.service exists
+    - name: Check that dnf-automatic-infrabus.service exists
       ansible.builtin.assert:
         that:
-          - dnf_automatic_reboot_service.status['LoadState'] == 'loaded'
+          - dnf_automatic_infrabus_service.status['LoadState'] == 'loaded'
