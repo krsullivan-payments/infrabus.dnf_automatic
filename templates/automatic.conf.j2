@@ -21,12 +21,12 @@ send_error_messages = {{ dnf_automatic_send_error_messages }}
 
 [command]
 
-command_format = {{ dnf_automatic_command_format }}
+command_format = \"{{ dnf_automatic_command_format }}\"
 stdin_format = {{ dnf_automatic_stdin_format }}
 
 [command_email]
 
-command_format = {{ dnf_automatic_email_command_format }}
+command_format = \"{{ dnf_automatic_email_command_format }}\"
 stdin_format = {{ dnf_automatic_email_stdin_format }}
 email_from = {{ dnf_automatic_email_from }}
 email_to = {{ dnf_automatic_email_to }}
