@@ -1,4 +1,6 @@
 ---
+- name: Include variable tasks
+  ansible.builtin.include_tasks: variables.yml
 
 - name: Install dnf-automatic package
   ansible.builtin.package:

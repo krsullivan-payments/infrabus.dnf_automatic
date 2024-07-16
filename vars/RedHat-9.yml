@@ -1,0 +1,4 @@
+---
+dnf_automatic_service_dependencies:
+  - yum-utils
+  - s-nail
